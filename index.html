@@ -1,0 +1,101 @@
+# Repository
+موقع
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>موسوعتي - المنصة المجتمعية للقصص</title>
+    <style>
+        body { font-family: Tahoma, sans-serif; background: #f4f6f9; margin: 0; padding: 0; color: #333; }
+        header { background: #0066cc; color: #fff; padding: 20px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        header h1 { margin: 0; font-size: 24px; }
+        .container { max-width: 800px; margin: 20px auto; padding: 15px; background: #fff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .story-card { border-bottom: 1px solid #eee; padding: 15px 0; }
+        .story-card:last-child { border-bottom: none; }
+        .story-title { font-size: 18px; color: #0066cc; font-weight: bold; margin-bottom: 5px; }
+        .story-author { font-size: 13px; color: #777; margin-bottom: 10px; }
+        .btn { background: #28a745; color: #fff; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: bold; }
+        .btn:hover { background: #218838; }
+        .add-section { background: #e9ecef; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        .add-section input, .add-section textarea { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>📖 موسوعتي</h1>
+        <p style="margin: 5px 0 0; font-size: 14px;">منصتك الحرة لقراءة ونشر القصص</p>
+    </header>
+
+    <div class="container">
+        <!-- قسم إضافة قصة جديدة -->
+        <div class="add-section">
+            <h3 style="margin-top: 0; color: #0066cc;">انشر قصتك الجديدة</h3>
+            <input type="text" id="storyTitle" placeholder="عنوان القصة...">
+            <input type="text" id="storyAuthor" placeholder="اسم الكاتب...">
+            <textarea id="storyContent" rows="3" placeholder="اكتب نبذة أو فصل من القصة..."></textarea>
+            <button class="btn" onclick="addNewStory()">نشر القصة الآن</button>
+        </div>
+
+        <h3 style="border-bottom: 2px solid #0066cc; padding-bottom: 5px;">أحدث القصص المنشورة</h3>
+        <div id="storiesContainer">
+            <!-- هنا تظهر القصص -->
+        </div>
+    </div>
+
+<script>
+    // تحميل القصص عند فتح الصفحة
+    window.onload = function() {
+        renderStories();
+    };
+
+    function addNewStory() {
+        let title = document.getElementById('storyTitle').value.trim();
+        let author = document.getElementById('storyAuthor').value.trim();
+        let content = document.getElementById('storyContent').value.trim();
+
+        if(!title || !author || !content) {
+            alert('الرجاء تعبئة جميع الحقول بنجاح!');
+            return;
+        }
+
+        let stories = JSON.parse(localStorage.getItem('mawso3ati_all_stories') || '[]');
+        stories.unshift({ title, author, content, date: new Date().toLocaleDateString('ar-SA') });
+        
+        localStorage.setItem('mawso3ati_all_stories', JSON.stringify(stories));
+
+        // تفريغ الحقول
+        document.getElementById('storyTitle').value = '';
+        document.getElementById('storyAuthor').value = '';
+        document.getElementById('storyContent').value = '';
+
+        renderStories();
+        alert('تم نشر قصتك بنجاح على المنصة!');
+    }
+
+    function renderStories() {
+        let stories = JSON.parse(localStorage.getItem('mawso3ati_all_stories') || '[]');
+        let container = document.getElementById('storiesContainer');
+
+        if(stories.length === 0) {
+            container.innerHTML = '<p style="color: #777; text-align: center;">لا توجد قصص منشورة حتى الآن. كن أول كاتِب ينشر!</p>';
+            return;
+        }
+
+        let html = '';
+        stories.forEach(story => {
+            html += `
+                <div class="story-card">
+                    <div class="story-title">${story.title}</div>
+                    <div class="story-author">الكاتب: ${story.author} | التاريخ: ${story.date}</div>
+                    <p style="margin: 5px 0; line-height: 1.6;">${story.content}</p>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    }
+</script>
+
+</body>
+</html>
